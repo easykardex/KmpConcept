@@ -1,16 +1,10 @@
 apply plugin: 'org.jetbrains.kotlin.multiplatform'
-apply plugin: 'kotlinx-serialization'
 apply plugin: 'com.android.library'
 
 //BEGIN CONFIG ANDROID LIB
 
 android {
     compileSdkVersion(28)
-
-    defaultConfig {
-        minSdkVersion(21)
-        targetSdkVersion(28)
-    }
 
     // By default the android gradle plugin expects to find the kotlin source files in
     // the folder `main` and the test in the folder `test`. This is to be able place
@@ -32,26 +26,11 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
-    }
-
-    packagingOptions {
-        // Ktor prevents the build otherwise
-        exclude 'META-INF/*.kotlin_module'
-    }
-
     buildTypes {
         release {
             minifyEnabled false
         }
     }
-}
-
-dependencies {
-    implementation "androidx.appcompat:appcompat:1.1.0"
 }
 
 //END CONFIG ANDROID LIB
@@ -83,6 +62,7 @@ dependencies {
 
     //libs for android
     androidMainImplementation kotlin_stdlib
+    androidMainImplementation "androidx.appcompat:appcompat:1.1.0"
 
     //libs for iOS
     iosMainImplementation kotlin_stdlib
