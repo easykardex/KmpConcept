@@ -1,2 +1,3 @@
 rootProject.name='KmpConcept'
 include ':app'
+include ':common'
