@@ -1,8 +1,8 @@
 apply plugin: 'org.jetbrains.kotlin.multiplatform'
 apply plugin: 'com.android.library'
+apply plugin: 'com.squareup.sqldelight'
 
 //BEGIN CONFIG ANDROID LIB
-
 android {
     compileSdkVersion(28)
 
@@ -62,12 +62,19 @@ dependencies {
 
     //libs for android
     androidMainImplementation kotlin_stdlib
-    androidMainImplementation "androidx.appcompat:appcompat:1.1.0"
+    androidMainImplementation "com.squareup.sqldelight:android-driver:1.3.0"
 
     //libs for iOS
     iosMainImplementation kotlin_stdlib
+    iosMainImplementation "com.squareup.sqldelight:native-driver:1.3.0"
 }
 //END DEPENDENCIES
+
+sqldelight {
+    MyDatabase {
+        packageName = "com.jmarkstar.common.repository.local"
+    }
+}
 
 //TASK WHICH IS GOING TO BE EXECUTED BY XCODE
 task copyFramework {
