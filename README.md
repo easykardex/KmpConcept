@@ -60,10 +60,10 @@ El proyecto debe tener las sgtes caracteristicas:
 	-  Finalmente, agregamos el script para generar automaticamente el *.framework cada vez que corramos el iOS app en xcode en target -> `Build Phases` -> `Run script` 
 	
 	```
-	cd "$SRCROOT/.."
-./gradlew :common:copyFramework -PXCODE_CONFIGURATION=${CONFIGURATION}
-```
-	
+		cd "$SRCROOT/.."
+	./gradlew :common:copyFramework -PXCODE_CONFIGURATION=${CONFIGURATION}
+	```
+
 	- Ahora ya se podria importar la libreria `common` y usar la clase `HelloWorldCommonKt.helloWorld()`
 
 	
