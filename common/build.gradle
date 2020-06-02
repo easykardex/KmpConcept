@@ -58,18 +58,17 @@ dependencies {
 
 //BEGIN KOTLIN MULTIPLAFORM
 kotlin {
-    targets {
 
-        // Android Target
-        android()
+    android("android")
 
-        // Select iOS target for real device or emulator.
-        final def iOSIsRealDevice = System.getenv('SDK_NAME')?.startsWith("iphoneos")
-        final def iOSTarget = iOSIsRealDevice ? presets.iosArm64 : presets.iosX64
-
-        // iOS target.
-        fromPreset(iOSTarget, 'ios') {
-            binaries { framework('common') }
+    // iPhone simulator    : presets.iosX64
+    // real iDevice 32 bit : presets.iosArm32 iphone 5 earlier
+    // real iDevice 64 bit : presets.iosArm64 iphone 6+
+    iosArm64("ios") {
+        binaries {
+            framework {
+                //freeCompilerArgs.add("-Xobjc-generics")
+            }
         }
     }
 }
@@ -90,26 +89,20 @@ dependencies {
 }
 //END DEPENDENCIES
 
-// Task to generate iOS framework for xcode projects.
-task packForXCode(type: Sync) {
-
-    final File frameworkDir = new File(buildDir, "xcode-frameworks")
-    final String mode = project.findProperty("XCODE_CONFIGURATION")?.toUpperCase() ?: 'DEBUG'
-    final def framework = kotlin.targets.ios.binaries.getFramework("common", mode)
-
-    inputs.property "mode", mode
-    dependsOn framework.linkTask
-
-    from { framework.outputFile.parentFile }
-    into frameworkDir
+//TASK WHICH IS GOING TO BE EXECUTED BY XCODE
+task copyFramework {
+    def buildType = project.findProperty('kotlin.build.type') ?: 'DEBUG'
+    def target = project.findProperty('kotlin.target') ?: 'ios'
+    dependsOn kotlin.targets."$target".binaries.getFramework(buildType).linkTask
 
     doLast {
-        new File(frameworkDir, 'gradlew').with {
-            text = "#!/bin/bash\nexport 'JAVA_HOME=${System.getProperty("java.home")}'\ncd '${rootProject.rootDir}'\n./gradlew \$@\n"
-            setExecutable(true)
+        def srcFile = kotlin.targets."$target".binaries.getFramework(buildType).outputFile
+        def targetDir = getProperty('buildDir')
+        copy {
+            from srcFile.parent
+            into targetDir
+            include 'app.framework/**'
+            include 'app.framework.dSYM'
         }
     }
 }
-
-// Run packForXCode when building.
-tasks.build.dependsOn packForXCode
